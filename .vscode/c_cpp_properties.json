@@ -1,0 +1,23 @@
+{
+  "configurations": [
+    {
+      "browse": {
+        "databaseFilename": "${default}",
+        "limitSymbolsToIncludedHeaders": false
+      },
+      "includePath": [
+        "/home/jopel/Documents/01_Coding/ros2-workspace-tut/install/turtlesim/include/**",
+        "/opt/ros/humble/include/**",
+        "/home/jopel/Documents/01_Coding/ros2-myWorkspace/src/cpp_simple_pubsub/include/**",
+        "/home/jopel/Documents/01_Coding/ros2-myWorkspace/src/my_cpp_package/include/**",
+        "/usr/include/**"
+      ],
+      "name": "ROS",
+      "intelliSenseMode": "gcc-x64",
+      "compilerPath": "/usr/bin/gcc",
+      "cStandard": "gnu11",
+      "cppStandard": "c++14"
+    }
+  ],
+  "version": 4
+}
