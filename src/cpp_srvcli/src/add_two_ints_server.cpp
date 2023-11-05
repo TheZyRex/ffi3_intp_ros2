@@ -16,6 +16,7 @@ int main(int argc, char **argv)
 {
   rclcpp::init(argc, argv);
 
+  /* make_shared is used for smart_pointers in c++ */
   std::shared_ptr<rclcpp::Node> node = rclcpp::Node::make_shared("add_two_ints_server");
 
   rclcpp::Service<example_interfaces::srv::AddTwoInts>::SharedPtr service =
