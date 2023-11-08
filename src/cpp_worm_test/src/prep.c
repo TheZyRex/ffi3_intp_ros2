@@ -37,3 +37,4 @@ void cleanupCursesApp(void)
     curs_set(1);  // Set cursor state to normal visibility
     endwin();     // Terminate curses application
 }
+

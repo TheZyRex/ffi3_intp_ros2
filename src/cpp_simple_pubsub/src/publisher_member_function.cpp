@@ -13,22 +13,13 @@
 // limitations under the License.
 
 
-/**
- * These includes represent the nodes dependencies which need to be added
- * to the package.xml and CMakeLists.txt
-*/
 #include <chrono>
-#include <functional>
 #include <memory>
-#include <string>
 
 #include "rclcpp/rclcpp.hpp"
-#include "std_msgs/msg/string.hpp"
+#include "tutorial_interfaces/msg/num.hpp"                                            // CHANGE
 
 using namespace std::chrono_literals;
-
-/* This example creates a subclass of Node and uses std::bind() to register a
- * member function as a callback from the timer. */
 
 class MinimalPublisher : public rclcpp::Node
 {
@@ -36,26 +27,21 @@ public:
   MinimalPublisher()
   : Node("minimal_publisher"), count_(0)
   {
-    publisher_ = this->create_publisher<std_msgs::msg::String>("topic", 10);
-
-    /* timer_callback is called twice a second */
-    timer_ = this->create_wall_timer(500ms, std::bind(&MinimalPublisher::timer_callback, this));
+    publisher_ = this->create_publisher<tutorial_interfaces::msg::Num>("topic", 10);  // CHANGE
+    timer_ = this->create_wall_timer(
+      500ms, std::bind(&MinimalPublisher::timer_callback, this));
   }
 
 private:
-
-  /* the timer_callback function is where the message data is set
-   and the messages are actually published */
   void timer_callback()
   {
-    auto message = std_msgs::msg::String();
-    message.data = "Hello, world! " + std::to_string(count_++);
-    RCLCPP_INFO(this->get_logger(), "Publishing: '%s'", message.data.c_str());
+    auto message = tutorial_interfaces::msg::Num();                                   // CHANGE
+    message.num = this->count_++;                                                     // CHANGE
+    RCLCPP_INFO_STREAM(this->get_logger(), "Publishing: '" << message.num << "'");    // CHANGE
     publisher_->publish(message);
   }
-
   rclcpp::TimerBase::SharedPtr timer_;
-  rclcpp::Publisher<std_msgs::msg::String>::SharedPtr publisher_;
+  rclcpp::Publisher<tutorial_interfaces::msg::Num>::SharedPtr publisher_;             // CHANGE
   size_t count_;
 };
 

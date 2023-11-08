@@ -39,8 +39,12 @@ struct board
     int last_row; // Last usable row on the board
     int last_col; // Last usable column on the board
 
-    enum BoardCodes **cells;
-    // APA-Structure 
+    enum BoardCodes cells[MIN_NUMBER_OF_ROWS][MIN_NUMBER_OF_COLS];
+    // A 2-dimensional array for storing the contents of the board.
+    //
+    // Since the worm is not permitted to cross over itsself
+    // nor other elements (apart from food) we do not need a reference
+    // counter for occupied cells.
 
     int food_items; // Number of food items left in the current level
 };
@@ -59,6 +63,5 @@ extern int getLastColOnBoard(struct board* aboard);
 // Setters
 extern void decrementNumberOfFoodItems(struct board* aboard);
 extern void setNumberOfFoodItems(struct board* aboard, int n);
-extern void cleanupBoard(struct board *aboard);
 
 #endif  // #define _BOARD_MODEL_H

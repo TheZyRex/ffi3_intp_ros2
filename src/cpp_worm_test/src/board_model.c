@@ -37,12 +37,8 @@ void placeItem(struct board *aboard, int y, int x, enum BoardCodes board_code,
 
 resCode_t initializeBoard(struct board *aboard)
 {
-  // Maximal index of a row / col
-  aboard->last_row =  LINES - ROWS_RESERVED - 1; 
-  aboard->last_col =  COLS - 1;
-
   // Check dimenstions of the board
-  if ( aboard->last_col < MIN_NUMBER_OF_COLS - 1 || aboard->last_row < MIN_NUMBER_OF_ROWS - 1)
+  if ( COLS < MIN_NUMBER_OF_COLS || LINES < MIN_NUMBER_OF_ROWS + ROWS_RESERVED )
   {
     char buf[100];
     sprintf(buf, "Das Fenster ist zu klein: wir brauchen %dx%d", MIN_NUMBER_OF_COLS, MIN_NUMBER_OF_ROWS + ROWS_RESERVED);
@@ -50,31 +46,9 @@ resCode_t initializeBoard(struct board *aboard)
     return RES_FAILED;
   }
 
-  // For LINES amount of rows, a size of "sizeof(enum BoardCodes*)" bytes is
-  // initialized and allocated to aboard->cells which is a APA structure
-  // the calloc() function allocates memory for an array of nmemb elements of size bytes each and returns a pointer
-  // to the allocated memory
-  aboard->cells = calloc(LINES-1, sizeof(enum BoardCodes*));
-
-  if (aboard->cells == NULL)
-  {
-    showDialog("Abbruch: Zu wenig Speicher", "Bitte eine Taste druecken");
-    exit(RES_FAILED); // No memory -> direct exit
-  }
-
-  for (int y = 0; y < LINES-1; y++)
-  {
-    // Allocate array of columns for each y
-    // If you need the dynamically allocated memory to be zero-initialized, then use calloc, else use malloc
-    // in this case i use malloc, because i dont need to initialize every col
-    aboard->cells[y] = malloc((COLS-1) * sizeof(int*));
-    if ( aboard->cells[y] == NULL)
-    {
-      showDialog("Abbruch: Zu wenig Speicher", "Bitte eine Taste druecken");
-      exit(RES_FAILED); // No memory -> direct exit
-    }
-  }
-
+  // Maximal index of a row / col
+  aboard->last_row = MIN_NUMBER_OF_ROWS - 1;
+  aboard->last_col = MIN_NUMBER_OF_COLS - 1;
 
   return RES_OK;
 }
@@ -103,11 +77,11 @@ resCode_t initializeLevel(struct board *aboard)
     attroff(COLOR_PAIR(COLP_BARRIER));
   }
 
-  //// Draw a line to signal the rightmost column of the board.
-  //for (y = 0; y <= aboard->last_row ; y++) {
-  //  placeItem(aboard,y,aboard->last_col,
-  //  BC_BARRIER,SYMBOL_BARRIER,COLP_BARRIER);
-  //}
+  // Draw a line to signal the rightmost column of the board.
+  for (y = 0; y <= aboard->last_row ; y++) {
+    placeItem(aboard,y,aboard->last_col,
+    BC_BARRIER,SYMBOL_BARRIER,COLP_BARRIER);
+  }
 
   // Barriers: use a loop
   x = aboard->last_col/3; 
@@ -155,22 +129,6 @@ resCode_t initializeLevel(struct board *aboard)
   }
     
   return RES_OK;
-}
-
-// Cleanup Board
-
-void cleanupBoard(struct board *aboard)
-{
-  for (int y = 0; y < LINES-1; y++)
-  {
-    // if cells[y] is NULL we can presume that the following elements are also NULL
-    if (aboard->cells[y] == NULL)
-    {
-      break;
-    }
-    free(aboard->cells[y]);
-  }
-  free(aboard->cells);
 }
 
 // Getters

@@ -15,24 +15,25 @@
 #include <time.h>
 #include <string.h>
 #include <unistd.h>
-
-#include "options.h"
 #include "prep.h"
 #include "worm.h"
 #include "worm_model.h"
 #include "board_model.h"
 #include "messages.h"
 
-void initializeColors();
-void readUserInput(struct worm *aworm, gameState_t *agame_state );
-resCode_t doLevel(struct game_options *somegops);
-resCode_t playGame(int argc, char *argv[]);
+
+
+// ********************************************************************************************
+// Forward declarations of functions
+// ********************************************************************************************
+// Management of the game
+void readUserInput(struct worm *aworm, gameState_t * agame_state );
+resCode_t doLevel();
 
 // ********************************************************************************************
 // Functions
 // ********************************************************************************************
 // Initialize colors of the game
-
 void initializeColors()
 {
   start_color();
@@ -96,10 +97,9 @@ void readUserInput(struct worm *aworm, gameState_t * agame_state ) {
     return;
 }
 
-resCode_t doLevel(struct game_options *somegops) {
+resCode_t doLevel() {
     struct worm userworm, *ptr_userworm=NULL;   // Local variable for storing the user's worm
     ptr_userworm = &userworm;                   // Pointer for userworm
-
     struct board theboard, *ptr_theboard=NULL;
     ptr_theboard = &theboard;
 
@@ -125,7 +125,6 @@ resCode_t doLevel(struct game_options *somegops) {
     res_code = initializeLevel(ptr_theboard);
     if ( res_code != RES_OK)
     {
-      cleanupBoard(ptr_theboard);
       return res_code;
     }
 
@@ -136,8 +135,7 @@ resCode_t doLevel(struct game_options *somegops) {
 
     res_code = initializeWorm(ptr_userworm, WORM_LENGTH, WORM_INITIAL_LENGTH, bottomLeft, WORM_RIGHT, COLP_USER_WORM);
     if ( res_code != RES_OK) {
-      cleanupBoard(ptr_theboard);
-      return res_code;
+        return res_code;
     }
     
     // Show worm at its initial position
@@ -173,7 +171,7 @@ resCode_t doLevel(struct game_options *somegops) {
         showStatus(ptr_theboard, ptr_userworm);
 
         // Sleep a bit before we show the updated window
-        napms(somegops->nap_time);
+        napms(NAP_TIME);
 
         // Display all the updates
         refresh();
@@ -230,9 +228,6 @@ resCode_t doLevel(struct game_options *somegops) {
             res_code = RES_INTERNAL_ERROR;
     }
 
-    // Cleanup allocated memory 
-    cleanupBoard(ptr_theboard);
-
     // Normal exit point
     return res_code;
 }
@@ -240,61 +235,37 @@ resCode_t doLevel(struct game_options *somegops) {
 // END WORM_DETAIL
 // ********************************************************************************************
 
-resCode_t playGame(int argc, char *argv[])
-{
-  resCode_t res_code;
-
-  struct game_options thegops, *ptr_thegops = NULL;
-  ptr_thegops = &thegops;
-
-  // Read the command line options
-  res_code = readCommandLineOptions(ptr_thegops, argc, argv);
-  if (res_code != RES_OK)
-  {
-    return res_code;
-  }
-
-  if (thegops.start_single_step)
-  {
-    nodelay(stdscr, FALSE);
-  }
-
-  // Play the game
-  res_code = doLevel(ptr_thegops);
-  return res_code;
-}
-
-
 // ********************************************************************************************
 // MAIN
 // ********************************************************************************************
 
-int main(int argc, char *argv[]) {
-    resCode_t res_code;         // Result code from functions
-
-    getchar();
-
-    // Here we start
-    initializeCursesApplication();  // Init various settings of our application
-    initializeColors();             // Init colors used in the game
-
-    // Maximal LINES and COLS are set by curses for the current window size.
-    // Note: we do not cope with resizing in this simple examples!
-
-    // Check if the window is large enough to display messages in the message area
-    // a has space for at least one line for the worm
-    if ( LINES < ROWS_RESERVED + MIN_NUMBER_OF_ROWS || COLS < MIN_NUMBER_OF_COLS ) {
-        cleanupCursesApp();
-
-        printf("Das Fenster ist zu klein: wir brauchen mindestens %dx%d\n",
-                MIN_NUMBER_OF_COLS, MIN_NUMBER_OF_ROWS + ROWS_RESERVED );
-
-        res_code = RES_FAILED;
-
-    } else {
-        res_code = playGame(argc, argv);
-        cleanupCursesApp();
-    }
-
-    return res_code;
-}
+//int main(void) {
+//    resCode_t res_code;         // Result code from functions
+//
+//    getchar();
+//
+//    // Here we start
+//    initializeCursesApplication();  // Init various settings of our application
+//    initializeColors();             // Init colors used in the game
+//
+//    // Maximal LINES and COLS are set by curses for the current window size.
+//    // Note: we do not cope with resizing in this simple examples!
+//
+//    // Check if the window is large enough to display messages in the message area
+//    // a has space for at least one line for the worm
+//    if ( LINES < ROWS_RESERVED + MIN_NUMBER_OF_ROWS || COLS < MIN_NUMBER_OF_COLS ) {
+//        cleanupCursesApp();
+//
+//        printf("Das Fenster ist zu klein: wir brauchen mindestens %dx%d\n",
+//                MIN_NUMBER_OF_COLS, MIN_NUMBER_OF_ROWS + ROWS_RESERVED );
+//
+//        res_code = RES_FAILED;
+//
+//    } else {
+//        res_code = doLevel();
+//        cleanupCursesApp();
+//    }
+//
+//    return res_code;
+//}
+//
